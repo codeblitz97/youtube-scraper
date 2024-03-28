@@ -51,7 +51,15 @@ export const getVideos = async (
         )?.url;
         const publishedTime = videoData.publishedTimeText?.simpleText;
         const length = videoData.lengthText?.simpleText;
-        const description = videoData.descriptionSnippet.runs[0].text;
+
+        let description;
+
+        try {
+          description = videoData.descriptionSnippet.runs[0].text;
+        } catch (error) {
+          description = 'No description';
+        }
+
         const viewCount = Number(
           (videoData.viewCountText as ViewCountText)?.simpleText
             .match(/[0-9,]+/g)?.[0]
@@ -115,7 +123,13 @@ export const getStreams = async (
         )?.url;
         const publishedTime = videoData.publishedTimeText?.simpleText;
         const length = videoData.lengthText?.simpleText;
-        const description = videoData.descriptionSnippet.runs[0].text;
+        let description;
+
+        try {
+          description = videoData.descriptionSnippet.runs[0].text;
+        } catch (error) {
+          description = 'No description';
+        }
 
         const viewCount = Number(
           (videoData.viewCountText as ViewCountText)?.simpleText
