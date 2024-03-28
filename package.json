@@ -1,7 +1,9 @@
 {
-  "name": "youtube-scraper",
+  "name": "ytscr",
   "module": "src/index.ts",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.",
   "author": {
     "name": "Mohtasim Alam Sohom",
     "url": "https://www.sohom829.com"
@@ -13,9 +15,6 @@
   "homepage": "https://github.com/codeblitz97/youtube-scraper#readme",
   "bugs": {
     "url": "https://github.com/codeblitz97/youtube-scraper/issues"
-  },
-  "scripts": {
-    "prepare": "bun install && bun run build.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
