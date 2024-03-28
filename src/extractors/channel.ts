@@ -173,7 +173,6 @@ export const getShorts = async (
         const videoData =
           videoItem?.richItemRenderer?.content?.reelItemRenderer;
 
-        console.log(videoData);
         if (!videoData) return null;
 
         const videoId = videoData.videoId;
