@@ -94,7 +94,7 @@ export const getStreams = async (
         "Invalid channel Id. Channel name must start with '@' i.e @mistahfeet"
       );
     }
-    const url = `${baseUrl}/${channelId}/videos`;
+    const url = `${baseUrl}/${channelId}/streams`;
 
     const data = await sendRequest(url);
 
