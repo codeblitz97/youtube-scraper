@@ -66,3 +66,7 @@ Contributions to YTSCR are welcome and encouraged! If you'd like to contribute t
 5. Submit a pull request detailing your changes, along with a brief description of the modifications.
 
 Thank you for considering contributing to YTSCR! Your help is greatly appreciated.
+
+### Note for Contributors
+
+Please note that this project was initialized in [Bun](https://bun.sh). Make sure you have Bun installed in your machine so you can contribute without any runtime errors.
