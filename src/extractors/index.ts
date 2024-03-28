@@ -1,4 +1,4 @@
-export { getStreams, getVideos, isLive } from './channel';
+export { getStreams, getVideos, isLive, getAll, getShorts } from './channel';
 export type {
   Accessibility,
   AccessibilityData,
@@ -18,6 +18,10 @@ export type {
   VideoRenderer,
   ViewCountText,
   YouTubeScriptResponse,
+  Short,
+  Stream,
+  Video,
+  AllResponse,
 } from './channel.types';
 export { isStream } from './utils';
 export { getInfo } from './info';

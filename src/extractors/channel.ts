@@ -1,26 +1,20 @@
 import { load } from 'cheerio';
 import { sendRequest } from '../request';
 import type {
-  Thumbnail,
+  AllResponse,
+  Short,
+  Stream,
+  Video,
   ViewCountText,
   YouTubeScriptResponse,
 } from './channel.types';
-import { isStream } from './utils';
+import { isMessage, isStream } from './utils';
 
 const baseUrl = 'https://www.youtube.com/';
 
 export const getVideos = async (
   channelId: string
-): Promise<
-  {
-    title?: string;
-    thumbnails?: Thumbnail[];
-    thumbnailUrl?: string;
-    length?: string;
-    publishedTime?: string;
-    viewCount?: number;
-  }[]
-> => {
+): Promise<Video[] | { message: string }> => {
   try {
     if (!channelId.startsWith('@')) {
       throw new Error(
@@ -57,6 +51,7 @@ export const getVideos = async (
         )?.url;
         const publishedTime = videoData.publishedTimeText?.simpleText;
         const length = videoData.lengthText?.simpleText;
+        const description = videoData.descriptionSnippet.runs[0].text;
         const viewCount = Number(
           (videoData.viewCountText as ViewCountText)?.simpleText
             .match(/[0-9,]+/g)?.[0]
@@ -64,12 +59,13 @@ export const getVideos = async (
         );
 
         return {
+          videoId,
           title,
+          description,
           thumbnails,
           thumbnailUrl,
           length,
           publishedTime,
-          videoId,
           viewCount,
         };
       })
@@ -77,23 +73,13 @@ export const getVideos = async (
 
     return videosArray.filter((video: any) => video !== null);
   } catch (error) {
-    console.error('Error in getVideos:', error);
-    throw error;
+    return { message: 'An error occurred' };
   }
 };
 
 export const getStreams = async (
   channelId: string
-): Promise<
-  {
-    title?: string;
-    thumbnails?: Thumbnail[];
-    thumbnailUrl?: string;
-    length?: string;
-    publishedTime?: string;
-    viewCount?: number;
-  }[]
-> => {
+): Promise<Stream[] | { message: string }> => {
   try {
     if (!channelId.startsWith('@')) {
       throw new Error(
@@ -129,6 +115,8 @@ export const getStreams = async (
         )?.url;
         const publishedTime = videoData.publishedTimeText?.simpleText;
         const length = videoData.lengthText?.simpleText;
+        const description = videoData.descriptionSnippet.runs[0].text;
+
         const viewCount = Number(
           (videoData.viewCountText as ViewCountText)?.simpleText
             .match(/[0-9,]+/g)?.[0]
@@ -136,11 +124,12 @@ export const getStreams = async (
         );
 
         return {
+          videoId,
           title,
+          description,
           thumbnailUrl,
           length,
           publishedTime,
-          videoId,
           viewCount,
         };
       })
@@ -148,8 +137,65 @@ export const getStreams = async (
 
     return videosArray.filter((video: any) => video !== null);
   } catch (error) {
-    console.error('Error in getStreams:', error);
-    throw error;
+    return { message: 'An error occurred' };
+  }
+};
+
+export const getShorts = async (
+  channelId: string
+): Promise<Short[] | { message: string }> => {
+  try {
+    if (!channelId.startsWith('@')) {
+      throw new Error(
+        "Invalid channel Id. Channel name must start with '@' i.e @mistahfeet"
+      );
+    }
+    const url = `${baseUrl}/${channelId}/shorts`;
+
+    const data = await sendRequest(url);
+
+    const regex = /var\s+ytInitialData\s+=\s+({.*?});/;
+    const match = data.match(regex);
+
+    if (!match || !match[1]) {
+      throw new Error('Failed to parse video data');
+    }
+
+    const videos = JSON.parse(match[1]).contents?.twoColumnBrowseResultsRenderer
+      .tabs[2].tabRenderer.content.richGridRenderer.contents;
+
+    if (!videos) {
+      throw new Error('No videos found');
+    }
+
+    const videosArray = await Promise.all(
+      videos.map(async (videoItem: any) => {
+        const videoData =
+          videoItem?.richItemRenderer?.content?.reelItemRenderer;
+
+        console.log(videoData);
+        if (!videoData) return null;
+
+        const videoId = videoData.videoId;
+        const thumbnailUrl = videoData.thumbnail?.thumbnails.find(
+          (t: any) => t.width >= 300
+        )?.url;
+
+        const viewCount = String(
+          (videoData.viewCountText as ViewCountText)?.simpleText
+        );
+
+        return {
+          videoId,
+          thumbnailUrl,
+          viewCount,
+        };
+      })
+    );
+
+    return videosArray.filter((video: any) => video !== null);
+  } catch (error) {
+    return { message: 'An error occurred' };
   }
 };
 
@@ -188,7 +234,34 @@ export const isLive = async (channelId: string) => {
 
     return status;
   } catch (error) {
-    console.error('Error in isLive:', error);
-    throw error;
+    return { message: 'An error occurred' };
   }
+};
+
+export const getAll = async (
+  channelId: string
+): Promise<AllResponse | undefined> => {
+  try {
+    const streamsPromise = getStreams(channelId);
+    const videosPromise = getVideos(channelId);
+    const shortsPromise = getShorts(channelId);
+
+    let [shorts, streams, videos] = await Promise.all([
+      shortsPromise,
+      streamsPromise,
+      videosPromise,
+    ]);
+
+    if (!isMessage(shorts)) {
+      shorts = [];
+    }
+    if (!isMessage(videos)) {
+      videos = [];
+    }
+    if (!isMessage(streams)) {
+      streams = [];
+    }
+
+    return { videos, streams, shorts } as AllResponse;
+  } catch (error) {}
 };

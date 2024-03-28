@@ -85,3 +85,38 @@ export interface Contents {
 export interface YouTubeScriptResponse {
   contents?: Contents;
 }
+
+export interface Video {
+  videoId?: string;
+  title?: string;
+  description?: string;
+  thumbnails?: Thumbnail[];
+  thumbnailUrl?: string;
+  length?: string;
+  publishedTime?: string;
+  viewCount?: number;
+}
+
+export interface Stream {
+  videoId?: string;
+  title?: string;
+  description?: string;
+  thumbnails?: Thumbnail[];
+  thumbnailUrl?: string;
+  length?: string;
+  publishedTime?: string;
+  viewCount?: number;
+}
+
+export interface Short {
+  videoId?: string;
+  thumbnailUrl?: string;
+  thumbnails?: Thumbnail[];
+  viewCount: string;
+}
+
+export interface AllResponse {
+  videos: Video[];
+  streams: Stream[];
+  shorts: Short[];
+}

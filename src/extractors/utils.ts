@@ -8,3 +8,7 @@ export function isStream(json: any): boolean {
   }
   return false;
 }
+
+export function isMessage(data: any): data is { message: string } {
+  return typeof data !== 'object' || !('message' in data);
+}
