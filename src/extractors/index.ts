@@ -23,5 +23,6 @@ export type {
   Video,
   AllResponse,
 } from './channel.types';
+export type { AdaptiveFormat, BasicFormat, Details, Info } from './info.types';
 export { isStream } from './utils';
 export { getInfo } from './info';

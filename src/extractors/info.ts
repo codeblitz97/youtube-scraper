@@ -1,10 +1,18 @@
 import { sendRequest } from '../request';
 import { load } from 'cheerio';
-import type { Thumbnail } from './channel.types';
+import type {
+  AdaptiveFormat,
+  BasicFormat,
+  Details,
+  Format,
+  Info,
+} from './info.types';
 
 const baseUrl = 'https://www.youtube.com/watch?v=';
 
-export const getInfo = async (videoId: string) => {
+export const getInfo = async (
+  videoId: string
+): Promise<Info | { message?: string } | undefined> => {
   try {
     const data = await sendRequest(baseUrl + videoId);
     const $ = load(data);
@@ -19,82 +27,14 @@ export const getInfo = async (videoId: string) => {
         const match = scriptContent.match(regex);
         if (match && match[1]) {
           const parsedData = JSON.parse(match[1]);
-          const basicFormats: {
-            itag?: number;
-            url?: string;
-            mimeType?: string;
-            bitrate?: number;
-            width?: number;
-            height?: number;
-            lastModified?: string;
-            contentLength?: string;
-            quality?: string;
-            fps?: number;
-            qualityLabel?: string;
-            projectionType?: string;
-            averageBitrate?: number;
-            audioQuality?: string;
-            approxDurationMs?: string;
-            audioSampleRate?: string;
-            audioChannels?: number;
-          }[] = parsedData.streamingData.formats;
+          const basicFormats: BasicFormat[] = parsedData.streamingData.formats;
 
-          const adaptiveFormats: {
-            itag?: number;
-            url?: string;
-            mimeType?: string;
-            bitrate?: number;
-            width?: number;
-            height?: number;
-            initRange?: {
-              start: string;
-              end: string;
-            };
-            indexRange?: {
-              start: string;
-              end: string;
-            };
-            lastModified?: string;
-            contentLength?: string;
-            quality?: string;
-            fps?: number;
-            qualityLabel?: string;
-            projectionType?: string;
-            averageBitrate?: number;
-            colorInfo?: {
-              primaries: string;
-              transferCharacteristics: string;
-              matrixCoefficients: string;
-            };
-            approxDurationMs?: string;
-            highReplication?: boolean;
-            audioQuality?: string;
-            audioSampleRate?: string;
-            audioChannels?: number;
-            loudnessDb?: number;
-          }[] = parsedData.streamingData.adaptiveFormats;
+          const adaptiveFormats: AdaptiveFormat[] =
+            parsedData.streamingData.adaptiveFormats;
 
-          const formats = { basicFormats, adaptiveFormats };
+          const formats: Format = { basicFormats, adaptiveFormats };
 
-          const details: {
-            videoId?: string;
-            title?: string;
-            lengthSeconds?: string;
-            keywords?: string[];
-            channelId?: string;
-            isOwnerViewing?: boolean;
-            shortDescription?: string;
-            isCrawlable?: boolean;
-            thumbnail?: {
-              thumbnails: Thumbnail[];
-            };
-            allowRatings?: boolean;
-            viewCount?: string;
-            author?: string;
-            isPrivate?: boolean;
-            isUnpluggedCorpus?: boolean;
-            isLiveContent?: boolean;
-          } = parsedData.videoDetails;
+          const details: Details = parsedData.videoDetails;
 
           return {
             ...formats,
@@ -104,7 +44,6 @@ export const getInfo = async (videoId: string) => {
       }
     }
   } catch (error) {
-    console.error(error);
-    throw error;
+    return { message: (error as Error).message };
   }
 };
