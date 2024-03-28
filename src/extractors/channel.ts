@@ -73,7 +73,7 @@ export const getVideos = async (
 
     return videosArray.filter((video: any) => video !== null);
   } catch (error) {
-    return { message: 'An error occurred' };
+    return { message: (error as Error).message };
   }
 };
 
@@ -137,7 +137,7 @@ export const getStreams = async (
 
     return videosArray.filter((video: any) => video !== null);
   } catch (error) {
-    return { message: 'An error occurred' };
+    return { message: (error as Error).message };
   }
 };
 
@@ -195,7 +195,7 @@ export const getShorts = async (
 
     return videosArray.filter((video: any) => video !== null);
   } catch (error) {
-    return { message: 'An error occurred' };
+    return { message: (error as Error).message };
   }
 };
 
@@ -234,7 +234,7 @@ export const isLive = async (channelId: string) => {
 
     return status;
   } catch (error) {
-    return { message: 'An error occurred' };
+    return { message: (error as Error).message };
   }
 };
 
@@ -263,5 +263,7 @@ export const getAll = async (
     }
 
     return { videos, streams, shorts } as AllResponse;
-  } catch (error) {}
+  } catch (error) {
+    return { shorts: [], streams: [], videos: [] };
+  }
 };
