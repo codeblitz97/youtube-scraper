@@ -20,3 +20,4 @@ export type {
   YouTubeScriptResponse,
 } from './channel.types';
 export { isStream } from './utils';
+export { getInfo } from './info';
