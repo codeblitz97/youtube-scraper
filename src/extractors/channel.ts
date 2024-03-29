@@ -131,11 +131,17 @@ export const getStreams = async (
           description = 'No description';
         }
 
-        const viewCount = Number(
-          (videoData.viewCountText as ViewCountText)?.simpleText
-            .match(/[0-9,]+/g)?.[0]
-            .replace(/,/g, '')
-        );
+        let viewCount: number;
+
+        try {
+          viewCount = Number(
+            (videoData.viewCountText as ViewCountText)?.simpleText
+              .match(/[0-9,]+/g)?.[0]
+              .replace(/,/g, '')
+          );
+        } catch (error) {
+          viewCount = 0;
+        }
 
         return {
           videoId,
