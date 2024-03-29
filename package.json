@@ -4,7 +4,7 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "files": [
     "dist",
     "README.md",
@@ -17,7 +17,12 @@
     "YouTube Search",
     "YouTube Scraper",
     "YouTube Data Scraper",
-    "Discord Notification"
+    "Discord Notification",
+    "Stream",
+    "Video",
+    "Short",
+    "Channel",
+    "Info"
   ],
   "author": {
     "name": "Mohtasim Alam Sohom",
